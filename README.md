@@ -2,9 +2,19 @@
 
 현대자동차그룹 차량용 앱 개발 공모전을 위한 Kotlin Android 앱입니다. 차량을 함께 사용하는 가족이 인계 카드를 남기고, 다음 운전자가 확인한 뒤 실제 조치를 완료하는 흐름을 구현했습니다.
 
+## 바로 시작하기와 참여
+
+- [설치용 APK 다운로드](https://github.com/sseohyunahn/carlog-pleos/releases/download/v0.1.0/CarLog-prototype.apk): 앱을 먼저 확인하고 싶을 때 사용합니다. 다른 버전은 [전체 릴리스 목록](https://github.com/sseohyunahn/carlog-pleos/releases)에서 확인할 수 있습니다.
+- [Fork해서 참여하기](https://github.com/sseohyunahn/carlog-pleos/fork): 본인 저장소에서 수정한 뒤 이 저장소로 PR을 보낼 수 있습니다.
+- [개선 작업과 버그 목록](https://github.com/sseohyunahn/carlog-pleos/issues): 함께 진행할 작업을 선택하거나 새 문제를 등록합니다.
+- [협업 안내](CONTRIBUTING.md): 개발 환경, 작업 순서, 확인 방법을 설명합니다.
+- [우선 개선 작업](ROADMAP.md): 코드 검토에서 발견한 보완점과 완료 조건을 정리했습니다.
+
+공개 저장소의 Fork·PR 참여에는 별도 초대가 필요하지 않습니다. 원본 저장소에 직접 push하려면 저장소 관리자의 협업자 초대가 필요합니다.
+
 ## 실행
 
-이 PC에서 바로 실행하려면 제공된 `CarLog-run.cmd`와 `CarLog-prototype.apk`를 같은 폴더에 두고 `CarLog-run.cmd`를 여세요. 공식 Pleos 에뮬레이터가 켜지고 앱이 설치·실행됩니다. 이 보조 실행 파일은 이번 작업에서 설치한 개발 도구의 로컬 경로를 사용하므로 다른 PC에서는 아래 설정 과정이 필요합니다.
+아래 과정은 저장소를 처음 내려받는 참여자를 위한 안내입니다. 기존 개발 PC에 별도로 제공된 `CarLog-run.cmd`는 해당 PC에 설치한 개발 도구를 사용하는 실행 보조 파일이며, GitHub 저장소에는 포함되지 않습니다.
 
 1. Android Studio에서 이 폴더를 프로젝트로 엽니다.
 2. JDK 17, Android SDK Platform 35, Build Tools 35.0.0을 준비합니다. Gradle Wrapper 버전은 8.10.2입니다.
@@ -13,6 +23,8 @@
 5. 설정에서 **Pleos 연결**을 선택하고 동의 및 위치 권한을 허용하면 해당 에뮬레이터의 제공 데이터를 조회합니다.
 
 Windows에서는 SDK와 Gradle 캐시 경로에 영문 경로를 사용하는 것을 권장합니다. 이 프로젝트는 한글 프로젝트 경로 검사에 대한 AGP 옵션을 포함합니다. 환경에 따라 네이티브 빌드 도구나 테스트 실행기에서 경로 문제가 생기면 프로젝트도 영문 경로에 풀어 주세요. 배포 ZIP에는 개발자 PC의 `local.properties`, 빌드 캐시, SDK, 가상 기기 이미지, 서명 키가 포함되지 않습니다.
+
+SDK 위치는 각자 Android Studio에서 설정합니다. `local.properties`나 다른 개발자의 SDK 경로를 복사해 Git에 올리지 않습니다. 자세한 첫 실행 절차는 [협업 안내](CONTRIBUTING.md)를 확인하세요.
 
 ```powershell
 .\gradlew.bat assembleDebug testDebugUnitTest lintDebug
