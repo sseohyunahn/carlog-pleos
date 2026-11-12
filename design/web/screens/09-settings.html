@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ko" data-theme="night" data-frame="half">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CarLog 설정</title>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  body { word-break: keep-all; }
+  .settings { flex: 1; min-height: 0; overflow: hidden; position: relative; }
+  .settings .col { gap: 40px; }
+  [data-frame="half"] .settings .cols { display: flex; flex-direction: column; gap: 40px; }
+  [data-frame="half"] .settings .col { flex: none; }
+  .sec__head { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+  .sec__head .t { font: var(--title-s); flex: 1; }
+  .sec__hint { font: var(--label-m); color: var(--text-3); margin-top: 14px; }
+
+  /* data mode: two-option segmented control (no Sand: Sand is reserved for the one primary button) */
+  .seg { display: grid; grid-template-columns: 1fr 1fr; gap: var(--target-gap); padding: 8px; background: var(--surface); border-radius: 28px; }
+  .seg__opt { min-height: 104px; border-radius: 22px; padding: 18px 24px; display: flex; align-items: center; gap: 16px; color: var(--text-3); }
+  .seg__opt b { display: block; font: var(--body-l); font-weight: 700; color: var(--text-2); }
+  .seg__opt span { font: var(--label-m); }
+  .seg__opt .mark { width: 40px; height: 40px; border-radius: 50%; flex: none; box-shadow: inset 0 0 0 2px var(--outline); display: grid; place-items: center; }
+  .seg__opt.is-on { background: var(--raised); box-shadow: inset 0 0 0 2px var(--text-2); color: var(--text-2); }
+  .seg__opt.is-on b { color: var(--text); font-weight: 800; }
+  .seg__opt.is-on .mark { background: var(--text); color: var(--bg); box-shadow: none; }
+
+  /* diagnostics: a readable table, one field per line */
+  .diag { background: var(--surface); border-radius: var(--r-panel); padding: 8px 36px; }
+  .diag__row { display: grid; grid-template-columns: 200px 1fr auto; align-items: center; gap: 24px; min-height: 68px; }
+  .diag__row + .diag__row { border-top: 2px solid var(--divider); }
+  .diag__k { font: var(--body-m); color: var(--text-2); }
+  .diag__v { font: var(--body-l); color: var(--text); }
+  .diag__v.none { font: var(--body-m); color: var(--text-3); }
+  .diag__v.warn { color: var(--warning); font-weight: 700; display: inline-flex; align-items: center; gap: 10px; }
+  .diag__at { font: var(--label-m); color: var(--text-3); text-align: right; }
+  .diag__foot { display: flex; align-items: center; gap: 24px; margin-top: 24px; }
+  .diag__foot .note { flex: 1; font: var(--label-m); color: var(--text-3); }
+
+  .kv { background: var(--surface); border-radius: var(--r-panel); padding: 8px 36px; }
+  .kv__row { display: flex; align-items: center; gap: 24px; min-height: 76px; }
+  .kv__row + .kv__row { border-top: 2px solid var(--divider); }
+  .kv__row .k { font: var(--body-m); color: var(--text-2); flex: 1; }
+  .kv__row .v { font: var(--body-l); }
+
+  .prose { font: var(--body-m); color: var(--text-2); max-width: 900px; }
+
+  .danger { border-top: 2px solid var(--divider); padding-top: 32px; }
+  .danger__btns { display: flex; flex-wrap: wrap; gap: var(--target-gap); }
+  [data-frame="full"] .danger__btns { display: grid; grid-template-columns: max-content; }
+  .ver { font: var(--label-s); color: var(--text-3); margin-top: 8px; }
+  .sec__hint + .ver { margin-top: 24px; }
+
+  .fade { position: absolute; left: 0; right: 0; bottom: 0; height: 120px; background: linear-gradient(to bottom, transparent, var(--bg)); pointer-events: none; }
+  [data-frame="full"] .fade { display: none; }
+  [data-frame="full"] .settings { overflow: visible; }
+</style>
+</head>
+<body>
+<script src="../icons.js"></script>
+<div class="frame">
+  <div class="shell">
+    <nav class="rail" aria-label="화면">
+      <div class="wordmark">CarLog</div>
+      <div class="rail__item"><svg class="i"><use href="#i-board"/></svg>인계 보드</div>
+      <div class="rail__item"><svg class="i"><use href="#i-pen"/></svg>인계 남기기</div>
+      <div class="rail__item"><svg class="i"><use href="#i-clock"/></svg>지난 기록</div>
+      <div class="rail__item is-on"><svg class="i"><use href="#i-gear"/></svg>설정</div>
+    </nav>
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <header class="appbar">
+        <span class="wordmark rail-hide">CarLog</span>
+        <span class="greet only-full">설정</span>
+        <span class="appbar__spacer"></span>
+        <span class="link"><span class="link__dot"></span>차량 연결됨</span>
+        <span class="driver"><span class="avatar">어</span>어머니<svg class="i i--s"><use href="#i-chevron"/></svg></span>
+      </header>
+      <nav class="tabs" aria-label="화면">
+        <div class="tab">인계 보드</div><div class="tab">인계 남기기</div><div class="tab">지난 기록</div><div class="tab is-on">설정</div>
+      </nav>
+
+      <main class="frame__body settings" style="margin-top:32px">
+        <div class="cols">
+          <div class="col">
+            <section aria-label="데이터 모드">
+              <div class="sec__head"><span class="t">데이터 모드</span></div>
+              <div class="seg" role="radiogroup">
+                <div class="seg__opt" role="radio" aria-checked="false"><span class="mark"></span><div><b>시연 모드</b><span>가상 데이터로 체험해요</span></div></div>
+                <div class="seg__opt is-on" role="radio" aria-checked="true"><span class="mark"><svg class="i i--s"><use href="#i-check"/></svg></span><div><b>Pleos 연결</b><span>이 차량에서 읽어요</span></div></div>
+              </div>
+              <p class="sec__hint">두 모드의 기록은 따로 저장돼요.</p>
+            </section>
+
+            <section aria-label="연결 진단">
+              <div class="sec__head"><span class="t">연결 진단</span>
+                <button class="btn btn--primary"><svg class="i"><use href="#i-refresh"/></svg>연결 다시 확인</button></div>
+              <div class="diag">
+                <div class="diag__row"><span class="diag__k">배터리</span><span class="diag__v">78%</span><span class="diag__at">10초 전</span></div>
+                <div class="diag__row"><span class="diag__k">주행 가능</span><span class="diag__v">312km</span><span class="diag__at">10초 전</span></div>
+                <div class="diag__row"><span class="diag__k">누적 주행</span><span class="diag__v">24,318km</span><span class="diag__at">10초 전</span></div>
+                <div class="diag__row"><span class="diag__k">문</span><span class="diag__v">모두 잠김</span><span class="diag__at">12초 전</span></div>
+                <div class="diag__row"><span class="diag__k">창문</span><span class="diag__v warn"><svg class="i i--s"><use href="#i-warning"/></svg>권한 없음</span><span class="diag__at"></span></div>
+                <div class="diag__row"><span class="diag__k">워셔액</span><span class="diag__v none">수신 없음</span><span class="diag__at"></span></div>
+              </div>
+              <p class="sec__hint">읽지 못한 값은 비워 두고 시연값으로 채우지 않아요.<br>창문 권한은 Pleos 연결을 다시 선택하면 허용할 수 있어요.</p>
+            </section>
+          </div>
+
+          <div class="col">
+            <section aria-label="음성">
+              <div class="sec__head"><span class="t">음성</span></div>
+              <div class="kv">
+                <div class="kv__row"><span class="k">음성 입력</span><span class="v">Pleos 음성</span></div>
+                <div class="kv__row"><span class="k">음성 읽기</span><span class="v">Pleos 음성 안내</span></div>
+              </div>
+              <p class="sec__hint">안 되면 Android 음성 안내로 읽어요. 녹음 파일은 남기지 않아요.</p>
+            </section>
+
+            <section aria-label="기록과 개인정보">
+              <div class="sec__head"><span class="t">기록과 개인정보</span></div>
+              <p class="prose">기록은 이 기기 안에만 저장하고 외부 서버로 보내지 않아요. 프로필은 작성자를 구분할 뿐 본인 인증이 아니에요.</p>
+            </section>
+
+            <section class="danger" aria-label="기록 정리">
+              <div class="sec__head"><span class="t">기록 정리</span></div>
+              <div class="danger__btns">
+                <button class="btn btn--danger"><svg class="i"><use href="#i-trash"/></svg>현재 모드 기록 전체 삭제</button>
+              </div>
+              <p class="sec__hint">삭제한 기록은 되돌릴 수 없어요.</p>
+              <p class="ver">CarLog 0.2.0</p>
+              <p class="ver">Pleos 연결 · Android API 28 이상</p>
+            </section>
+          </div>
+        </div>
+        <div class="fade"></div>
+      </main>
+    </div>
+  </div>
+</div>
+<style>
+  [data-frame="half"] .only-full { display: none; }
+  [data-frame="full"] .rail-hide { display: none; }
+  [data-frame="full"] .appbar .greet { font: var(--title-s); color: var(--text); }
+</style>
+</body>
+</html>

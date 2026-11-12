@@ -1,0 +1,348 @@
+{
+  "$description": "첫 번째 ZIP의 디자인 구조와 크기 + 두 번째 ZIP Common.kt의 파랑/네이비 팔레트. Android 구현: app/src/main/java/com/carlog/app/ui/theme.",
+  "palette": {
+    "navy": "#002C5F",
+    "nightBackground": "#091522",
+    "dayBackground": "#F2F5F8",
+    "nightAccent": "#8ACFFF",
+    "dayAccent": "#0057B8"
+  },
+  "color": {
+    "night": {
+      "bg": {
+        "value": "#091522"
+      },
+      "surface": {
+        "value": "#142638"
+      },
+      "raised": {
+        "value": "#1E354C"
+      },
+      "divider": {
+        "value": "#38516A"
+      },
+      "outline": {
+        "value": "#52677C"
+      },
+      "text": {
+        "value": "#F1F6FC"
+      },
+      "textSecondary": {
+        "value": "#B7DFFF"
+      },
+      "textTertiary": {
+        "value": "#B1C2D4"
+      },
+      "disabled": {
+        "value": "#52677C"
+      },
+      "primary": {
+        "value": "#8ACFFF"
+      },
+      "onPrimary": {
+        "value": "#091522"
+      },
+      "tag": {
+        "value": "#002C5F"
+      },
+      "onTag": {
+        "value": "#FFFFFF"
+      },
+      "onTagSecondary": {
+        "value": "#B7DFFF"
+      },
+      "onTagWarning": {
+        "value": "#FFD08A"
+      },
+      "tagHole": {
+        "value": "#091522"
+      },
+      "accent": {
+        "value": "#8ACFFF"
+      },
+      "accentMark": {
+        "value": "#8ACFFF"
+      },
+      "warning": {
+        "value": "#FFD08A"
+      },
+      "danger": {
+        "value": "#E18383"
+      },
+      "success": {
+        "value": "#8AE1BF"
+      },
+      "scrim": {
+        "value": "rgba(9,21,34,0.72)"
+      },
+      "press": {
+        "value": "rgba(241,246,252,0.08)"
+      },
+      "edge": {
+        "value": "inset 0 1px 0 rgba(241,246,252,0.06)"
+      },
+      "secondaryButton": {
+        "value": "#1E354C"
+      },
+      "onSecondaryButton": {
+        "value": "#F1F6FC"
+      }
+    },
+    "day": {
+      "bg": {
+        "value": "#F2F5F8"
+      },
+      "surface": {
+        "value": "#FFFFFF"
+      },
+      "raised": {
+        "value": "#E8EFF6"
+      },
+      "divider": {
+        "value": "#D4DFE9"
+      },
+      "outline": {
+        "value": "#52677C"
+      },
+      "text": {
+        "value": "#10263F"
+      },
+      "textSecondary": {
+        "value": "#52677C"
+      },
+      "textTertiary": {
+        "value": "#52677C"
+      },
+      "disabled": {
+        "value": "#6D8DA9"
+      },
+      "primary": {
+        "value": "#0057B8"
+      },
+      "onPrimary": {
+        "value": "#FFFFFF"
+      },
+      "tag": {
+        "value": "#002C5F"
+      },
+      "onTag": {
+        "value": "#FFFFFF"
+      },
+      "onTagSecondary": {
+        "value": "#B7DFFF"
+      },
+      "onTagWarning": {
+        "value": "#FFD08A"
+      },
+      "tagHole": {
+        "value": "#F2F5F8"
+      },
+      "accent": {
+        "value": "#0057B8"
+      },
+      "accentMark": {
+        "value": "#0057B8"
+      },
+      "warning": {
+        "value": "#955000"
+      },
+      "danger": {
+        "value": "#A12F3A"
+      },
+      "success": {
+        "value": "#126C4D"
+      },
+      "scrim": {
+        "value": "rgba(16,38,63,0.56)"
+      },
+      "press": {
+        "value": "rgba(16,38,63,0.06)"
+      },
+      "edge": {
+        "value": "inset 0 0 0 1px #D4DFE9"
+      },
+      "secondaryButton": {
+        "value": "#E8EFF6"
+      },
+      "onSecondaryButton": {
+        "value": "#10263F"
+      }
+    },
+    "static": {
+      "overlayBg": {
+        "value": "#091522"
+      },
+      "overlayText": {
+        "value": "#F1F6FC"
+      },
+      "overlayTextSecondary": {
+        "value": "#B1C2D4"
+      }
+    }
+  },
+  "typography": {
+    "$font": "Asta Sans (Pleos 시스템 UI 글꼴, Google Fonts, OFL). 숫자는 tabular-nums.",
+    "$unit": "size / lineHeight, dp(=sp). 크기는 Pleos 스케일, 행간은 한글 읽기용으로 넓힘(본문 약 1.5배). letterSpacing은 em",
+    "feature": {
+      "size": 88,
+      "lineHeight": 96,
+      "weight": 800,
+      "letterSpacing": -0.03,
+      "$note": "화면당 하나. 주차 위치·배터리 같은 핵심 값"
+    },
+    "headlineL": {
+      "size": 60,
+      "lineHeight": 72,
+      "weight": 800,
+      "letterSpacing": -0.02
+    },
+    "headlineM": {
+      "size": 56,
+      "lineHeight": 68,
+      "weight": 800,
+      "letterSpacing": -0.02
+    },
+    "headlineS": {
+      "size": 48,
+      "lineHeight": 60,
+      "weight": 700,
+      "letterSpacing": -0.02
+    },
+    "titleL": {
+      "size": 40,
+      "lineHeight": 52,
+      "weight": 700,
+      "letterSpacing": -0.01
+    },
+    "titleM": {
+      "size": 36,
+      "lineHeight": 48,
+      "weight": 700,
+      "letterSpacing": -0.01
+    },
+    "titleS": {
+      "size": 32,
+      "lineHeight": 44,
+      "weight": 700,
+      "letterSpacing": -0.01
+    },
+    "bodyL": {
+      "size": 30,
+      "lineHeight": 44,
+      "weight": 500,
+      "letterSpacing": 0
+    },
+    "bodyM": {
+      "size": 28,
+      "lineHeight": 42,
+      "weight": 400,
+      "letterSpacing": 0
+    },
+    "bodyS": {
+      "size": 26,
+      "lineHeight": 38,
+      "weight": 400,
+      "letterSpacing": 0
+    },
+    "labelM": {
+      "size": 24,
+      "lineHeight": 32,
+      "weight": 500,
+      "letterSpacing": 0.01,
+      "$note": "운전자가 읽는 글자의 최소 크기"
+    },
+    "labelS": {
+      "size": 20,
+      "lineHeight": 28,
+      "weight": 500,
+      "letterSpacing": 0.01,
+      "$note": "버전 표시 등 운전과 무관한 정보만"
+    },
+    "buttonL": {
+      "size": 32,
+      "lineHeight": 32,
+      "weight": 700,
+      "letterSpacing": -0.01
+    },
+    "buttonM": {
+      "size": 28,
+      "lineHeight": 28,
+      "weight": 700
+    },
+    "buttonS": {
+      "size": 26,
+      "lineHeight": 26,
+      "weight": 700
+    },
+    "nav": {
+      "size": 28,
+      "lineHeight": 28,
+      "weight": 600,
+      "$note": "탭·레일. 선택 시 800"
+    }
+  },
+  "space": {
+    "$unit": "dp, 8 단위",
+    "xs": 8,
+    "s": 16,
+    "m": 24,
+    "l": 32,
+    "xl": 48,
+    "xxl": 64,
+    "gutterHalf": 40,
+    "gutterFull": 56,
+    "targetGap": 24
+  },
+  "size": {
+    "touchMin": 76,
+    "buttonL": {
+      "height": 100,
+      "radius": 32,
+      "minWidth": 296
+    },
+    "buttonM": {
+      "height": 80,
+      "radius": 24
+    },
+    "buttonS": {
+      "height": 76,
+      "radius": 20,
+      "$note": "Pleos Small(64)보다 크게: Android for Cars 최소 76dp"
+    },
+    "iconL": 48,
+    "iconM": 40,
+    "iconS": 32,
+    "iconStroke": "48dp 그리드 기준 3.6px (24 그리드에선 1.8px), 둥근 끝",
+    "avatarL": 120,
+    "avatarM": 76
+  },
+  "radius": {
+    "tag": 36,
+    "panel": 28,
+    "row": 24,
+    "chip": 999,
+    "sheet": 40
+  },
+  "motion": {
+    "$note": "주행 중 자동 애니메이션 금지. 누름 반응만 허용",
+    "press": "scale 0.95 + 바탕색 변경, 100ms",
+    "enter": "200ms, emphasized decelerate",
+    "exit": "150ms"
+  },
+  "layout": {
+    "$assumption": "Pleos Connect 에뮬레이터 2560x1440 @160dpi 가정(공식 수치 미공개). 앱 영역은 상태바·GNB·Driving View를 뺀 값으로 추정. 에뮬레이터에서 adb shell wm size / wm density로 확인 필요",
+    "display": {
+      "width": 2560,
+      "height": 1440
+    },
+    "windowHalf": {
+      "width": 1060,
+      "height": 1256,
+      "$note": "지도 옆 1:1 분할(기본 대상)"
+    },
+    "windowFull": {
+      "width": 2120,
+      "height": 1256
+    }
+  }
+}

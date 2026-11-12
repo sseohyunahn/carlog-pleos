@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="ko" data-theme="night" data-frame="half">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CarLog 저장 전 요약</title>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  body { word-break: keep-all; }
+  .sec { display: flex; flex-direction: column; gap: 16px; }
+
+  /* every chip group: 24dp between 76dp targets */
+  .chips { gap: var(--target-gap); }
+  /* selected chip: strong outline + check, no Sand fill (Sand is reserved for the save button) */
+  .chip.is-on { background: var(--raised); color: var(--text); box-shadow: inset 0 0 0 3px var(--text); font-weight: 800; }
+  .chip .i--s { margin-left: -6px; }
+
+  /* recipients: label + chips on one line */
+  .to { display: flex; align-items: center; gap: 24px; }
+  .to__label { font: var(--title-s); color: var(--text); flex: none; min-width: 140px; }
+
+  /* parking field — the screen's one bold element (filled state: reused spot) */
+  .park { background: var(--surface); border-radius: var(--r-panel); box-shadow: inset 0 0 0 2px var(--outline);
+    padding: 18px 20px 18px 32px; display: flex; align-items: center; gap: var(--target-gap); }
+  .park__main { flex: 1; min-width: 0; }
+  .park__label { font: var(--label-m); color: var(--text-2); }
+  .park__value { font: var(--headline-s); letter-spacing: -0.01em; color: var(--text); margin-top: 2px; }
+  .park__value small { font: var(--title-s); line-height: 1; margin-left: 6px; color: var(--text-2); letter-spacing: 0; }
+  .park .icon-btn { background: transparent; color: var(--text-2); box-shadow: inset 0 0 0 2px var(--divider); }
+  .park-note { font: var(--label-m); color: var(--warning); display: flex; gap: 10px; align-items: flex-start; }
+  .park-note .i--s { margin-top: -2px; }
+  .btn-row { display: flex; gap: var(--target-gap); flex-wrap: wrap; }
+  [data-frame="half"] .cols { align-content: start; gap: 24px; }
+  [data-frame="half"] .col { gap: 16px; }
+  [data-frame="half"] .sec { gap: 12px; }
+  [data-frame="half"] .park { padding-top: 14px; padding-bottom: 14px; }
+  [data-frame="half"] .draft { padding-top: 16px; padding-bottom: 16px; }
+  [data-frame="half"] .draft__edit { margin-top: 16px; padding-top: 16px; }
+
+  /* memo composer */
+  .compose { display: flex; gap: var(--target-gap); }
+  .compose .btn--voice { flex: 1; justify-content: flex-start; padding-left: 40px; gap: 20px; }
+  [data-frame="half"] .compose .btn { height: var(--btn-m-h); }
+
+  /* memos in the list (arrive from 05 '목록에 추가'; tap one to re-edit) */
+  .drafts { display: flex; flex-direction: column; gap: 12px; }
+  .draft { background: var(--surface); border-radius: var(--r-row); padding: 20px 20px 20px 24px; }
+  .draft__top { display: grid; grid-template-columns: 76px 1fr 76px; gap: 24px; align-items: center; }
+  .draft .cat { width: 76px; height: 76px; }
+  .draft__meta { font: var(--label-m); color: var(--text-3); display: flex; gap: 16px; }
+  .draft__meta .imp { color: var(--warning); font-weight: 700; }
+  .draft__text { font: var(--body-l); color: var(--text); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .draft .icon-btn { color: var(--text-2); }
+  .draft--open { box-shadow: inset 0 0 0 2px var(--outline); }
+  .draft--important .cat, .draft--important .draft__icon { background: color-mix(in srgb, var(--warning) 16%, var(--surface)); color: var(--warning); }
+  .draft--important .cat { color: var(--warning); }
+  .draft__edit { display: flex; flex-direction: column; gap: var(--target-gap);
+    margin-top: 20px; padding-top: 20px; border-top: 2px solid var(--divider); }
+  .draft__edit .chips { gap: var(--target-gap); flex-wrap: nowrap; }
+  .draft__edit .chip { padding: 0 22px; }
+  .edit__foot { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .edit__hint { font: var(--label-m); color: var(--text-3); }
+  .toggle { display: inline-flex; align-items: center; gap: 16px; height: var(--touch-min); font: var(--button-s); font-weight: 600; color: var(--text); }
+
+  /* save bar: half = pinned over the scroll, full = footer of the right column */
+  .savebar { position: absolute; left: 0; right: 0; bottom: 0; padding: 24px var(--gutter-half) 24px;
+    background: linear-gradient(to bottom, transparent, var(--bg) 22%); display: flex; align-items: center; gap: var(--target-gap); }
+  .savebar__info { flex: 1; min-width: 0; }
+  .savebar__k { font: var(--label-m); color: var(--text-3); display: flex; gap: 16px; }
+  .savebar__v { font: var(--body-m); color: var(--text); margin-top: 6px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 20px; }
+  .savebar__v .warn { color: var(--warning); font-weight: 700; display: inline-flex; align-items: center; gap: 8px; }
+  .savebar .icon-btn { background: transparent; color: var(--text-2); box-shadow: inset 0 0 0 2px var(--divider); }
+  .savebar__privacy { display: none; }
+  [data-frame="full"] .savebar { position: static; margin-top: auto; padding: 28px 0 0; background: none;
+    border-top: 2px solid var(--divider); align-items: flex-end; }
+  [data-frame="full"] .savebar__privacy { display: flex; gap: 12px; align-items: flex-start; font: var(--label-m); color: var(--text-3); margin-top: 16px; }
+  [data-frame="full"] .frame__body { padding-bottom: 40px; }
+
+  /* full only: snapshot panel fills the left column */
+  .vehicle { display: none; }
+  [data-frame="full"] .vehicle { display: flex; flex-direction: column; flex: 1; }
+  .vehicle .metric__v { font: var(--title-l); }
+  .vehicle__note { font: var(--label-m); color: var(--text-3); margin-top: auto; padding-top: 24px; }
+  [data-frame="full"] .col { gap: 40px; }
+  [data-frame="full"] .col > .sec + .vehicle { margin-top: 0; }
+  [data-frame="full"] .cols { gap: 48px; }
+  [data-frame="full"] .edit__foot .toggle { margin-left: auto; }
+  /* full only: the list's free room, so the footer sits at the bottom on purpose */
+  .room { display: none; }
+  [data-frame="full"] .room { display: grid; place-items: center; flex: 1; min-height: 120px; border-radius: var(--r-row);
+    border: 2px dashed var(--outline); font: var(--label-m); color: var(--text-3); }
+  /* ---------- 06: save summary dialog ----------
+     Background = the editor 03 (driver 어머니), dimmed by the scrim. Its save bar is left out so the dialog's
+     '인계 카드 저장' is the only Sand fill on screen. Bold element: the parking block with the warning bar. */
+  .dialog.sum { width: 940px; padding: 44px 48px 48px; }
+  [data-frame="full"] .dialog.sum { width: 1480px; padding: 56px 64px 56px; }
+  .sum__head { display: flex; align-items: flex-end; gap: 24px; }
+  .sum__head .dialog__title { flex: 1; }
+  .sum__grid { display: grid; grid-template-columns: 1fr; margin-top: 28px; }
+  [data-frame="full"] .sum__grid { grid-template-columns: 1fr 1fr; gap: 0 56px; }
+  .sum__col { display: flex; flex-direction: column; }
+  .sum__row { padding: 22px 0; border-top: 2px solid var(--divider); }
+  .sum__col > .sum__row:first-child { border-top: 0; padding-top: 0; }
+  [data-frame="half"] .sum__col + .sum__col > .sum__row:first-child { border-top: 2px solid var(--divider); padding-top: 22px; }
+  .sum__k { font: var(--label-m); color: var(--text-3); display: flex; align-items: center; gap: 12px; }
+  .sum__k .stale { margin-left: auto; }
+  .sum__v { font: var(--body-l); color: var(--text); margin-top: 8px; }
+  .who { display: grid; grid-template-columns: 1fr 1.6fr; gap: 24px; }
+  .who .sum__v { display: flex; align-items: center; gap: 14px; }
+  .who .avatar { width: 48px; height: 48px; font: var(--label-m); font-weight: 800; line-height: 1; background: var(--secondary-btn); color: var(--text); box-shadow: inset 0 0 0 2px var(--outline); }
+
+  .park-sum { background: var(--raised); border-radius: var(--r-row); padding: 22px 24px 24px 34px; box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--warning) 45%, var(--divider)); margin: 2px 0 22px; }
+  .park-sum__top { display: flex; align-items: center; gap: 24px; }
+  .park-sum__top > div { flex: 1; min-width: 0; }
+  .park-sum__v { font: var(--headline-s); letter-spacing: -0.01em; color: var(--text); margin-top: 2px; }
+  .park-sum__v small { font: var(--title-s); line-height: 1; margin-left: 6px; color: var(--text-2); letter-spacing: 0; }
+  .park-sum__warn { font: var(--body-s); color: var(--warning); font-weight: 600; display: flex; gap: 12px; align-items: flex-start; margin-top: 14px; }
+  .park-sum__warn .i--s { margin-top: 1px; }
+
+  .state { display: flex; flex-wrap: wrap; gap: 10px 32px; margin-top: 10px; font: var(--body-l); }
+  .state .warn { color: var(--warning); font-weight: 700; display: inline-flex; align-items: center; gap: 10px; }
+
+  .handoff { display: flex; flex-direction: column; gap: 14px; margin-top: 14px; }
+  .handoff li { list-style: none; display: grid; grid-template-columns: 32px 1fr; gap: 16px; align-items: start; }
+  .handoff .i--s { color: var(--text-2); margin-top: 3px; }
+  .handoff .imp .i--s { color: var(--warning); }
+  .handoff__m { font: var(--label-m); color: var(--text-3); display: flex; gap: 12px; }
+  .handoff__m .imp-t { color: var(--warning); font-weight: 700; }
+  .handoff__t { font: var(--body-l); color: var(--text); margin-top: 4px; }
+  .dialog.sum .dialog__actions { margin-top: 32px; }
+  [data-frame="full"] .dialog.sum .dialog__actions { margin-top: 40px; }
+</style>
+</head>
+<body>
+<script src="../icons.js"></script>
+<div class="frame">
+  <div class="shell">
+    <nav class="rail" aria-label="화면">
+      <div class="wordmark">CarLog</div>
+      <div class="rail__item"><svg class="i"><use href="#i-board"/></svg>인계 보드</div>
+      <div class="rail__item is-on"><svg class="i"><use href="#i-pen"/></svg>인계 남기기</div>
+      <div class="rail__item"><svg class="i"><use href="#i-clock"/></svg>지난 기록</div>
+      <div class="rail__item"><svg class="i"><use href="#i-gear"/></svg>설정</div>
+    </nav>
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <header class="appbar">
+        <span class="wordmark rail-hide">CarLog</span>
+        <span class="greet only-full">이용을 마치셨나요? 다음 운전자에게 남겨 주세요</span>
+        <span class="appbar__spacer"></span>
+        <span class="link"><span class="link__dot"></span>차량 연결됨</span>
+        <span class="driver"><span class="avatar">어</span>어머니<svg class="i i--s"><use href="#i-chevron"/></svg></span>
+      </header>
+      <nav class="tabs" aria-label="화면">
+        <div class="tab">인계 보드</div><div class="tab is-on">인계 남기기</div><div class="tab">지난 기록</div><div class="tab">설정</div>
+      </nav>
+
+      <main class="frame__body" style="margin-top:24px">
+        <div class="cols">
+          <!-- left: who + where (+ snapshot in full) -->
+          <section class="col">
+            <div class="to" role="group" aria-label="받는 사람">
+              <span class="to__label">받는 사람</span>
+              <div class="chips">
+                <span class="chip is-on"><svg class="i i--s"><use href="#i-check"/></svg>다음 운전자 모두</span>
+                <span class="chip">아버지</span>
+                <span class="chip">자녀</span>
+              </div>
+            </div>
+
+            <div class="sec">
+              <div class="park">
+                <div class="park__main">
+                  <div class="park__label">주차 위치</div>
+                  <div class="park__value">B3층 C17<small>구역</small></div>
+                </div>
+                <!-- half: voice input sits inside the field to keep the memo list above the fold -->
+                <button class="btn btn--s only-half"><svg class="i i--s"><use href="#i-mic"/></svg>음성으로 말하기</button>
+                <span class="icon-btn" aria-label="주차 위치 지우고 다시 입력"><svg class="i"><use href="#i-close"/></svg></span>
+              </div>
+              <p class="park-note"><svg class="i i--s"><use href="#i-warning"/></svg>아버지가 어제 19:18에 기록한 위치예요. 이번 주차와 다를 수 있어요</p>
+              <div class="btn-row only-full">
+                <button class="btn btn--s"><svg class="i i--s"><use href="#i-mic"/></svg>음성으로 말하기</button>
+              </div>
+            </div>
+
+            <section class="panel vehicle" aria-label="저장할 차량 상태">
+              <div class="panel__head"><span class="t">저장할 차량 상태</span><span class="stale">10초 전 수신</span>
+                <span class="icon-btn" aria-label="다시 읽기"><svg class="i"><use href="#i-refresh"/></svg></span></div>
+              <div class="metrics">
+                <div class="metric"><span class="metric__v">78<small>%</small></span><span class="metric__l"><svg class="i i--s"><use href="#i-battery"/></svg>배터리</span>
+                  <div class="bar"><i style="width:78%"></i></div></div>
+                <div class="metric"><span class="metric__v">312<small>km</small></span><span class="metric__l"><svg class="i i--s"><use href="#i-range"/></svg>주행 가능</span></div>
+                <div class="metric metric--warn"><span class="metric__v">1<small>개</small></span><span class="metric__l"><svg class="i i--s"><use href="#i-window"/></svg>열린 창문</span></div>
+              </div>
+              <dl class="facts">
+                <dt>문</dt><dd>모두 잠김</dd>
+                <dt>누적 주행</dt><dd>24,318km</dd>
+                <dt>이번 주행</dt><dd>12.4km</dd>
+                <dt>워셔액</dt><dd>정상</dd>
+              </dl>
+              <p class="vehicle__note">저장하는 순간의 값이 인계 카드에 남아요.</p>
+            </section>
+          </section>
+
+          <!-- right: what to pass on -->
+          <section class="col">
+            <div class="sec">
+              <h2 class="h-section">전달할 내용 <span class="count">2</span><small>음성은 10초까지, 민감한 내용은 빼 주세요</small></h2>
+              <div class="compose">
+                <button class="btn btn--l btn--voice"><svg class="i i--l"><use href="#i-mic"/></svg>음성으로 남기기</button>
+                <button class="btn btn--l btn--ghost" style="min-width:0"><svg class="i"><use href="#i-keyboard"/></svg>직접 입력</button>
+              </div>
+            </div>
+
+            <div class="drafts" aria-label="추가한 메모">
+              <!-- opened for re-editing (tapped in the list) -->
+              <article class="draft draft--open">
+                <div class="draft__top">
+                  <span class="cat"><svg class="i"><use href="#i-bag"/></svg></span>
+                  <div style="min-width:0">
+                    <div class="draft__meta"><span>방금 추가</span><span>음성 메모</span></div>
+                    <p class="draft__text">트렁크에 장바구니 두었어요.</p>
+                  </div>
+                  <span class="icon-btn" aria-label="목록에서 빼기"><svg class="i"><use href="#i-trash"/></svg></span>
+                </div>
+                <div class="draft__edit">
+                  <div class="chips" role="radiogroup" aria-label="분류">
+                    <span class="chip is-on" role="radio" aria-checked="true"><svg class="i i--s"><use href="#i-check"/></svg>물품</span>
+                    <span class="chip" role="radio" aria-checked="false">충전·주유</span>
+                    <span class="chip" role="radio" aria-checked="false">차량 관리</span>
+                    <span class="chip" role="radio" aria-checked="false">위치</span>
+                    <span class="chip" role="radio" aria-checked="false">기타</span>
+                  </div>
+                  <div class="edit__foot">
+                    <span class="edit__hint">내용을 보고 골랐어요</span>
+                    <span class="toggle">중요한 전달사항<span class="switch" role="switch" aria-checked="false"></span></span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="draft draft--important">
+                <div class="draft__top">
+                  <span class="cat"><svg class="i"><use href="#i-battery"/></svg></span>
+                  <div style="min-width:0">
+                    <div class="draft__meta"><span>충전·주유</span><span class="imp">중요</span><span>음성 메모</span></div>
+                    <p class="draft__text">내일 아침 출발 전에 충전해 주세요.</p>
+                  </div>
+                  <span class="icon-btn" aria-label="목록에서 빼기"><svg class="i"><use href="#i-trash"/></svg></span>
+                </div>
+              </article>
+            </div>
+
+            <p class="room">메모를 8건 더 남길 수 있어요</p>
+
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+  <div class="scrim"></div>
+  <section class="dialog sum" role="dialog" aria-modal="true" aria-labelledby="sum-title">
+    <div class="sum__head">
+      <div>
+        <h2 class="dialog__title" id="sum-title">이대로 저장할까요?</h2>
+        <p class="dialog__body">저장하면 받는 사람의 인계 보드에 바로 보여요.</p>
+      </div>
+    </div>
+
+    <div class="sum__grid">
+      <div class="sum__col">
+        <div class="sum__row who">
+          <div><div class="sum__k">운전자</div><div class="sum__v"><span class="avatar">어</span>어머니</div></div>
+          <div><div class="sum__k">받는 사람</div><div class="sum__v">다음 운전자 모두</div></div>
+        </div>
+        <div class="park-sum">
+          <div class="park-sum__top">
+            <div>
+              <div class="sum__k">주차 위치</div>
+              <div class="park-sum__v">B3층 C17<small>구역</small></div>
+            </div>
+            <button class="btn btn--s btn--ghost"><svg class="i i--s"><use href="#i-pen"/></svg>위치 수정</button>
+          </div>
+          <p class="park-sum__warn"><svg class="i i--s"><use href="#i-warning"/></svg>아버지가 어제 19:18에 기록한 위치예요. 이번 주차와 다를 수 있어요</p>
+        </div>
+      </div>
+
+      <div class="sum__col">
+        <div class="sum__row">
+          <div class="sum__k">차량 상태<span class="stale">10초 전 수신</span></div>
+          <div class="state">
+            <span>배터리 78%</span><span>주행 가능 312km</span>
+            <span class="warn"><svg class="i i--s"><use href="#i-warning"/></svg>창문 1개 열림</span>
+          </div>
+        </div>
+        <div class="sum__row">
+          <div class="sum__k">넘길 메모 2건</div>
+          <ul class="handoff">
+            <li class="imp"><svg class="i i--s"><use href="#i-battery"/></svg>
+              <div><div class="handoff__m"><span>충전·주유</span><span class="imp-t">중요</span></div><p class="handoff__t">내일 아침 출발 전에 충전해 주세요.</p></div></li>
+            <li><svg class="i i--s"><use href="#i-bag"/></svg>
+              <div><div class="handoff__m"><span>물품</span></div><p class="handoff__t">트렁크에 장바구니 두었어요.</p></div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialog__actions">
+      <button class="btn btn--l">편집으로 돌아가기</button>
+      <button class="btn btn--l btn--primary"><svg class="i"><use href="#i-send"/></svg>인계 카드 저장</button>
+    </div>
+  </section>
+</div>
+<style>
+  .greet { font: var(--body-m); color: var(--text-3); }
+  [data-frame="half"] .only-full { display: none; }
+  [data-frame="full"] .only-half { display: none; }
+  [data-frame="full"] .rail-hide { display: none; }
+  [data-frame="full"] .appbar .greet { font: var(--title-s); color: var(--text); }
+</style>
+</body>
+</html>

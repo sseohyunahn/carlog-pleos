@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ko" data-theme="night" data-frame="half">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CarLog 인계 보드 (처음)</title>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  body { word-break: keep-all; }
+  [data-frame="full"] .frame__body { padding-bottom: 40px; }
+  .vehicle { display: none; }
+  [data-frame="full"] .vehicle { display: block; }
+  .greet { font: var(--body-m); color: var(--text-3); }
+
+  /* empty tag: same key-tag silhouette (hole + perforation), but unfilled — nothing has been handed over yet.
+     The one bold element on this screen is the primary button, not the tag. */
+  .tag.tag--empty { background: transparent; color: var(--text); border: 3px dashed var(--outline); padding: 37px 41px 40px; }
+  .tag--empty::before { left: 31px; top: 31px; box-shadow: none; border: 3px dashed var(--outline); }
+  .tag--empty .tag__head { color: var(--text-3); }
+  .tag--empty .tag__head strong { color: var(--text-2); }
+  .tag--empty .tag__place { margin-top: 32px; }
+  .tag--empty .tag__by { color: var(--text-2); font: var(--body-m); margin-top: 12px; }
+
+  .linkwait { display: flex; align-items: center; gap: 16px; font: var(--label-m); color: var(--text-2); margin-top: 0; }
+  .linkwait .i { color: var(--warning); }
+  [data-frame="full"] .linkwait { display: none; }
+
+  /* first handover: one clear action */
+  .first { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 0; }
+  [data-frame="half"] .first { padding-top: 16px; }
+  [data-frame="full"] .step { padding: 32px 0; }
+  [data-frame="full"] .steps { margin-top: 40px; }
+  .first__title { font: var(--title-m); }
+  .first__sub { font: var(--body-m); color: var(--text-2); margin-top: 10px; }
+  .steps { list-style: none; margin-top: 32px; display: flex; flex-direction: column; }
+  .step { display: grid; grid-template-columns: 76px 1fr; gap: 0 24px; align-items: center; padding: 20px 0; }
+  .step + .step { border-top: 2px solid var(--divider); }
+  .step b { display: block; font: var(--body-l); font-weight: 700; color: var(--text); }
+  .step span { font: var(--label-m); color: var(--text-3); }
+  .first .btn { margin-top: auto; }
+  [data-frame="full"] .first .btn { margin-top: 56px; }
+
+  .metric__v.none { font: var(--body-l); color: var(--text-3); padding: 9px 0 13px; }
+  .vehicle .facts dd.none { font: var(--body-l); }
+  .facts dd.none { color: var(--text-3); }
+  .vehicle__note { font: var(--label-m); color: var(--text-3); margin-top: 28px; padding-top: 24px; border-top: 2px solid var(--divider); }
+</style>
+</head>
+<body>
+<script src="../icons.js"></script>
+<div class="frame">
+  <div class="shell">
+    <nav class="rail" aria-label="화면">
+      <div class="wordmark">CarLog</div>
+      <div class="rail__item is-on"><svg class="i"><use href="#i-board"/></svg>인계 보드</div>
+      <div class="rail__item"><svg class="i"><use href="#i-pen"/></svg>인계 남기기</div>
+      <div class="rail__item"><svg class="i"><use href="#i-clock"/></svg>지난 기록</div>
+      <div class="rail__item"><svg class="i"><use href="#i-gear"/></svg>설정</div>
+    </nav>
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <header class="appbar">
+        <span class="wordmark rail-hide">CarLog</span>
+        <span class="greet only-full">안녕하세요, 어머니</span>
+        <span class="appbar__spacer"></span>
+        <span class="link link--warn"><span class="link__dot"></span>연결 대기</span>
+        <span class="driver"><span class="avatar">어</span>어머니<svg class="i i--s"><use href="#i-chevron"/></svg></span>
+      </header>
+      <nav class="tabs" aria-label="화면">
+        <div class="tab is-on">인계 보드</div><div class="tab">인계 남기기</div><div class="tab">지난 기록</div><div class="tab">설정</div>
+      </nav>
+
+      <main class="frame__body" style="margin-top:24px">
+        <div class="cols">
+          <section class="col">
+            <article class="tag tag--empty" aria-label="받은 인계">
+              <div class="tag__head"><span><strong>받은 인계</strong></span></div>
+              <div class="tag__place">아직 받은 인계가 없어요</div>
+              <div class="tag__by">다른 운전자가 인계를 남기면 이곳에 먼저 보여요.</div>
+            </article>
+            <p class="linkwait"><svg class="i i--s"><use href="#i-car"/></svg>차량 연결을 기다리는 중이에요. 차량 상태 없이도 인계를 남길 수 있어요.</p>
+
+            <section class="panel vehicle" aria-label="현재 차량 상태">
+              <div class="panel__head"><span class="t">지금 차량 상태</span><span class="stale">아직 수신 없음</span>
+                <span class="icon-btn" aria-label="다시 읽기"><svg class="i"><use href="#i-refresh"/></svg></span></div>
+              <div class="metrics">
+                <div class="metric"><span class="metric__v none" aria-label="수신 없음">—</span><span class="metric__l"><svg class="i i--s"><use href="#i-battery"/></svg>배터리</span></div>
+                <div class="metric"><span class="metric__v none" aria-label="수신 없음">—</span><span class="metric__l"><svg class="i i--s"><use href="#i-range"/></svg>주행 가능</span></div>
+                <div class="metric"><span class="metric__v none" aria-label="수신 없음">—</span><span class="metric__l"><svg class="i i--s"><use href="#i-window"/></svg>열린 창문</span></div>
+              </div>
+              <dl class="facts">
+                <dt>문</dt><dd class="none" aria-label="수신 없음">—</dd>
+                <dt>누적 주행</dt><dd class="none" aria-label="수신 없음">—</dd>
+                <dt>워셔액</dt><dd class="none" aria-label="수신 없음">—</dd>
+              </dl>
+              <p class="vehicle__note">연결되면 값이 채워져요. 받지 못한 값은 비워 둬요.</p>
+            </section>
+          </section>
+
+          <section class="col first" aria-label="첫 인계">
+            <h2 class="first__title">이 차의 첫 인계를 남겨 보세요</h2>
+            <p class="first__sub">다음 운전자가 차에 타면 바로 보게 돼요.</p>
+            <ul class="steps">
+              <li class="step"><span class="cat"><svg class="i"><use href="#i-pin"/></svg></span><div><b>주차 위치</b><span>층과 구역을 적어 두면 찾기 쉬워요</span></div></li>
+              <li class="step"><span class="cat"><svg class="i"><use href="#i-car"/></svg></span><div><b>차량 상태</b><span>연결되면 배터리와 창문 상태를 함께 저장해요</span></div></li>
+              <li class="step"><span class="cat"><svg class="i"><use href="#i-mic"/></svg></span><div><b>메모</b><span>직접 쓰거나 10초 음성으로 남겨요</span></div></li>
+            </ul>
+            <button class="btn btn--l btn--block btn--primary"><svg class="i"><use href="#i-plus"/></svg>첫 인계 남기기</button>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+<style>
+  [data-frame="half"] .only-full { display: none; }
+  [data-frame="full"] .rail-hide { display: none; }
+  [data-frame="full"] .appbar .greet { font: var(--title-s); color: var(--text); }
+</style>
+</body>
+</html>

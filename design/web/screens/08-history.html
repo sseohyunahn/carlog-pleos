@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ko" data-theme="night" data-frame="half">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CarLog 지난 기록</title>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  body { word-break: keep-all; }
+  /* ---- day groups: one surface per day, rows split by hairlines (not one card per row) ---- */
+  .history { display: flex; flex-direction: column; gap: 32px; min-height: 0; overflow: hidden; position: relative; flex: 1; }
+  .day__head { display: flex; align-items: baseline; gap: 16px; margin: 0 0 14px 4px; }
+  .day__name { font: var(--title-s); color: var(--text); }
+  .day__date { font: var(--label-m); color: var(--text-3); }
+  .day__rows { background: var(--surface); border-radius: var(--r-panel); overflow: hidden; }
+
+  .hrow { display: grid; grid-template-columns: 120px 1fr auto auto; column-gap: 24px; padding: 28px 32px; position: relative; }
+  .hrow + .hrow::before { content: ""; position: absolute; top: 0; left: 176px; right: 32px; border-top: 2px solid var(--divider); }
+  .hrow__time { font: var(--title-s); color: var(--text-2); letter-spacing: -0.01em; }
+  .hrow__who { font: var(--body-l); font-weight: 700; color: var(--text); }
+  .hrow__count { font: var(--label-m); color: var(--text-3); align-self: center; white-space: nowrap; }
+  .hrow__spot { grid-column: 2 / -1; display: flex; align-items: center; gap: 10px; font: var(--body-m); color: var(--text-2); margin-top: 6px; }
+  .hrow__spot .i { color: var(--text-3); }
+  .hrow__done { grid-column: 2 / -1; display: flex; align-items: center; gap: 16px; margin-top: 18px; padding-top: 18px; border-top: 2px dashed var(--divider); }
+  .hrow__done .memo-t { font: var(--body-s); color: var(--text-2); }
+  .hrow__done .by { font: var(--label-m); font-weight: 700; color: var(--success); display: inline-flex; align-items: center; gap: 8px; flex: 1; }
+  .hrow__open { grid-column: 2 / -1; font: var(--label-m); color: var(--text-3); margin-top: 10px; display: flex; align-items: center; gap: var(--target-gap); min-height: 40px; }
+  .hrow__open > span { flex: 1; }
+  .hrow__done + .hrow__open { margin-top: 12px; }
+  .hrow__alert { grid-column: 2 / -1; display: flex; align-items: center; gap: 10px; font: var(--label-m); color: var(--text-2); margin-top: 8px; }
+  .hrow__alert .i { color: var(--warning); }
+  /* half frame: a row opens the same .ticket as a pushed detail screen, so each row carries a chevron */
+  .hrow__go { align-self: center; color: var(--text-3); transform: rotate(-90deg); }
+  [data-frame="full"] .hrow__go { display: none; }
+  [data-frame="full"] .hrow { grid-template-columns: 120px 1fr auto; }
+  /* full frame: the selected row's actions move into the detail */
+  [data-frame="full"] .hrow.is-sel .btn, [data-frame="full"] .hrow.is-sel .hrow__alert { display: none; }
+
+  /* selected row: only meaningful when the detail is visible (full frame) */
+  [data-frame="full"] .hrow.is-sel { box-shadow: inset 0 0 0 3px var(--text-2); border-radius: var(--r-panel); }
+  [data-frame="full"] .fade { display: none; }
+  [data-frame="full"] .hrow.is-sel::before, [data-frame="full"] .hrow.is-sel + .hrow::before { display: none; }
+
+  .fade { position: absolute; left: 0; right: 0; bottom: 0; height: 120px; background: linear-gradient(to bottom, transparent, var(--bg)); pointer-events: none; }
+
+  /* ---- detail (full frame only): a quiet panel that borrows the tag's perforation, not its Sand fill ---- */
+  .detail { display: none; }
+  [data-frame="full"] .detail { display: block; }
+  .ticket { background: var(--surface); border-radius: var(--r-panel); padding: 40px 44px 36px; position: relative; }
+  .ticket__kicker { display: flex; align-items: center; gap: 16px; font: var(--label-m); color: var(--text-3); }
+  .ticket__kicker .hole { width: 28px; height: 28px; border-radius: 50%; background: var(--bg); box-shadow: inset 0 0 0 3px var(--divider); flex: none; }
+  .ticket__who { font: var(--title-m); margin-top: 18px; }
+  .ticket__spot { font: var(--headline-s); letter-spacing: -0.01em; margin-top: 20px; display: flex; align-items: baseline; gap: 8px; }
+  .ticket__spot small { font: var(--body-l); font-weight: 700; color: var(--text-2); }
+  .ticket__by { font: var(--label-m); color: var(--text-3); margin-top: 8px; display: flex; align-items: center; gap: 8px; }
+  .ticket__facts { display: flex; flex-wrap: wrap; gap: 12px 32px; font: var(--body-m); color: var(--text); margin-top: 24px; }
+  .ticket__facts .lbl { font: var(--label-m); color: var(--text-3); width: 100%; }
+  .ticket__facts .warn { color: var(--warning); font-weight: 700; display: inline-flex; align-items: center; gap: 8px; }
+  .perf { position: relative; margin: 36px -44px 32px; border-top: 3px dashed var(--divider); }
+  .perf::before, .perf::after { content: ""; position: absolute; top: -20px; width: 38px; height: 38px; border-radius: 50%; background: var(--bg); }
+  .perf::before { left: -19px; } .perf::after { right: -19px; }
+  .dmemo { display: flex; gap: 24px; align-items: flex-start; }
+  .dmemo + .dmemo { margin-top: 28px; }
+  .dmemo__body { display: flex; flex-direction: column; gap: 8px; padding-top: 2px; }
+  .dmemo__t { font: var(--body-l); }
+  .dmemo__s { font: var(--label-m); color: var(--text-3); display: flex; align-items: center; gap: 8px; }
+  .dmemo__s.ok { color: var(--success); font-weight: 700; }
+  .dmemo__act { display: flex; align-items: center; gap: var(--target-gap); flex-wrap: wrap; }
+  .dmemo__act .btn { margin-top: 4px; }
+  .ticket__foot { font: var(--label-m); color: var(--text-3); margin-top: 36px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  [data-frame="full"] .cols { grid-template-columns: 1fr 1fr; }
+</style>
+</head>
+<body>
+<script src="../icons.js"></script>
+<div class="frame">
+  <div class="shell">
+    <nav class="rail" aria-label="화면">
+      <div class="wordmark">CarLog</div>
+      <div class="rail__item"><svg class="i"><use href="#i-board"/></svg>인계 보드</div>
+      <div class="rail__item"><svg class="i"><use href="#i-pen"/></svg>인계 남기기</div>
+      <div class="rail__item is-on"><svg class="i"><use href="#i-clock"/></svg>지난 기록</div>
+      <div class="rail__item"><svg class="i"><use href="#i-gear"/></svg>설정</div>
+    </nav>
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <header class="appbar">
+        <span class="wordmark rail-hide">CarLog</span>
+        <span class="greet only-full">지난 기록</span>
+        <span class="appbar__spacer"></span>
+        <span class="link"><span class="link__dot"></span>차량 연결됨</span>
+        <span class="driver"><span class="avatar">어</span>어머니<svg class="i i--s"><use href="#i-chevron"/></svg></span>
+      </header>
+      <nav class="tabs" aria-label="화면">
+        <div class="tab">인계 보드</div><div class="tab">인계 남기기</div><div class="tab is-on">지난 기록</div><div class="tab">설정</div>
+      </nav>
+
+      <main class="frame__body" style="margin-top:32px">
+        <div class="cols">
+          <section class="history" aria-label="지난 인계 목록">
+            <div class="day">
+              <div class="day__head"><span class="day__name">오늘</span><span class="day__date">11월 8일</span></div>
+              <div class="day__rows">
+                <article class="hrow">
+                  <span class="hrow__time">12:40</span>
+                  <span class="hrow__who">어머니가 아버지에게</span>
+                  <span class="hrow__count">메모 1건</span>
+                  <svg class="i i--s hrow__go" aria-hidden="true"><use href="#i-chevron"/></svg>
+                  <span class="hrow__spot"><svg class="i i--s"><use href="#i-pin"/></svg>지상 1층 A08</span>
+                  <div class="hrow__open"><span>아직 조치 전이에요</span>
+                    <button class="btn btn--s btn--danger"><svg class="i i--s"><use href="#i-trash"/></svg>메모 삭제</button></div>
+                </article>
+              </div>
+            </div>
+
+            <div class="day">
+              <div class="day__head"><span class="day__name">어제</span><span class="day__date">11월 7일</span></div>
+              <div class="day__rows">
+                <article class="hrow is-sel">
+                  <span class="hrow__time">19:20</span>
+                  <span class="hrow__who">아버지가 어머니에게</span>
+                  <span class="hrow__count">메모 2건</span>
+                  <svg class="i i--s hrow__go" aria-hidden="true"><use href="#i-chevron"/></svg>
+                  <span class="hrow__spot"><svg class="i i--s"><use href="#i-pin"/></svg>B3층 C17 구역</span>
+                  <span class="hrow__alert"><svg class="i i--s"><use href="#i-warning"/></svg>기록 당시 창문 1개 열림</span>
+                  <div class="hrow__done">
+                    <span class="memo-t">뒷좌석 우산</span>
+                    <span class="by"><svg class="i i--s"><use href="#i-check"/></svg>어머니가 조치 완료</span>
+                    <button class="btn btn--s">완료 취소</button>
+                  </div>
+                  <div class="hrow__open"><span>1건은 아직 조치 전이에요</span></div>
+                </article>
+                <article class="hrow">
+                  <span class="hrow__time">08:05</span>
+                  <span class="hrow__who">아버지가 모두에게</span>
+                  <span class="hrow__count">메모 1건</span>
+                  <svg class="i i--s hrow__go" aria-hidden="true"><use href="#i-chevron"/></svg>
+                  <span class="hrow__spot"><svg class="i i--s"><use href="#i-pin"/></svg>B2층 D03 구역</span>
+                  <div class="hrow__done">
+                    <span class="memo-t">워셔액 보충</span>
+                    <span class="by"><svg class="i i--s"><use href="#i-check"/></svg>자녀가 조치 완료</span>
+                  </div>
+                </article>
+              </div>
+            </div>
+
+            <div class="day">
+              <div class="day__head"><span class="day__name">11월 4일</span><span class="day__date">수요일</span></div>
+              <div class="day__rows">
+                <article class="hrow">
+                  <span class="hrow__time">21:10</span>
+                  <span class="hrow__who">자녀가 어머니에게</span>
+                  <span class="hrow__count">메모 없음</span>
+                  <svg class="i i--s hrow__go" aria-hidden="true"><use href="#i-chevron"/></svg>
+                  <span class="hrow__spot"><svg class="i i--s"><use href="#i-pin"/></svg>집 앞 주차장 3번</span>
+                </article>
+              </div>
+            </div>
+            <div class="fade"></div>
+          </section>
+
+          <!-- Detail: shown beside the list in full frame. In half frame, tapping a row pushes this same .ticket as its own screen (back returns to the list). -->
+          <section class="col detail" aria-label="선택한 인계">
+            <article class="ticket">
+              <div class="ticket__kicker"><span class="hole"></span>어머니가 받은 인계<span>어제 19:20</span></div>
+              <div class="ticket__who">아버지가 어머니에게</div>
+              <div class="ticket__spot">B3층 C17<small>구역</small></div>
+              <div class="ticket__by"><svg class="i i--s"><use href="#i-pin"/></svg>아버지가 19:18에 직접 기록한 위치</div>
+              <div class="ticket__facts">
+                <span class="lbl">기록 당시 차량 상태</span>
+                <span>배터리 78%</span><span>주행 가능 312km</span>
+                <span class="warn"><svg class="i i--s"><use href="#i-warning"/></svg>창문 1개 열림</span>
+              </div>
+              <div class="perf"></div>
+              <div class="dmemo">
+                <span class="cat"><svg class="i"><use href="#i-wrench"/></svg></span>
+                <div class="dmemo__body"><span class="dmemo__t">내일 아침 출발 전에 충전해 주세요.</span>
+                <span class="dmemo__s">어머니가 확인했어요. 아직 조치 전이에요.</span></div>
+              </div>
+              <div class="dmemo">
+                <span class="cat"><svg class="i"><use href="#i-bag"/></svg></span>
+                <div class="dmemo__body"><span class="dmemo__t">뒷좌석에 우산 두었어요.</span>
+                <div class="dmemo__act"><span class="dmemo__s ok"><svg class="i i--s"><use href="#i-check"/></svg>어머니가 오늘 08:15에 조치 완료</span>
+                  <button class="btn btn--s">완료 취소</button></div></div>
+              </div>
+              <div class="ticket__foot"><span>Pleos에서 읽은 값으로 저장했어요</span>
+                <button class="btn btn--ghost"><svg class="i"><use href="#i-play"/></svg>이 인계 읽어주기</button></div>
+            </article>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+<style>
+  [data-frame="half"] .only-full { display: none; }
+  [data-frame="full"] .rail-hide { display: none; }
+  [data-frame="full"] .appbar .greet { font: var(--title-s); color: var(--text); }
+</style>
+</body>
+</html>

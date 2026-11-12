@@ -1,0 +1,115 @@
+{
+  "inputs": [
+    {
+      "role": "functionality and design",
+      "name": "CarLog_디자인_음성_20261108.zip",
+      "sha256": "d70832ca5ad6391cda38805fd7a2c6a62dcdbc958fe1dcf991afa941d46ea471"
+    },
+    {
+      "role": "colors only",
+      "name": "CarLog-v0.3-share.zip",
+      "sha256": "26f79f7b0b6f7d18489b9b23a9041daa6724a80a7aa2369d1e4d0741753cb29e"
+    }
+  ],
+  "unchanged_functionality": [
+    {
+      "path": "app/src/main/java/com/carlog/app/CarLogController.kt",
+      "normalized_sha256": "6d926c37bb4168bddf96e89bbf4b595671eb311c009256c79e4a952c072977cf",
+      "matches_first_zip": true
+    },
+    {
+      "path": "app/src/main/java/com/carlog/app/data/CarLogDatabase.kt",
+      "normalized_sha256": "39e8b7e0395cb457466bb5fe8fc25ff9a1fd9c2d41b8fce9d73fc8b8343dcf86",
+      "matches_first_zip": true
+    },
+    {
+      "path": "app/src/main/java/com/carlog/app/domain/Models.kt",
+      "normalized_sha256": "c44b95dde7cf13caf9f4b375d97c671659b3efa7ef1272204a1fbf646a7b9bb3",
+      "matches_first_zip": true
+    },
+    {
+      "path": "app/src/main/java/com/carlog/app/domain/NoteClassifier.kt",
+      "normalized_sha256": "c44a78fe791ffbe619dac0021c499303c17759e367c88edca1ea78e71afc0814",
+      "matches_first_zip": true
+    },
+    {
+      "path": "app/src/main/java/com/carlog/app/domain/RetentionPolicy.kt",
+      "normalized_sha256": "ac304215ad3ed0f69aab9b76b2adb011732aaefa7f91a58a6b7b870ba7fb31fe",
+      "matches_first_zip": true
+    },
+    {
+      "path": "app/src/main/java/com/carlog/app/domain/SnapshotFreshness.kt",
+      "normalized_sha256": "85e52fb3fa1a9ac2409111d835df7607d879844333d2585549b2bc9f5b6b7b40",
+      "matches_first_zip": true
+    },
+    {
+      "path": "app/src/main/java/com/carlog/app/domain/SnapshotMerge.kt",
+      "normalized_sha256": "2692e14e8e9b619605c4e20ea7926a1b81420d45281cf1322820fe57fb6ca3cd",
+      "matches_first_zip": true
+    },
+    {
+      "path": "app/src/main/java/com/carlog/app/domain/SpeechScript.kt",
+      "normalized_sha256": "66d32c751ec36ad7a23afb28059cee39dc5f9c461c8f32f2ec92128e1971f85a",
+      "matches_first_zip": true
+    },
+    {
+      "path": "app/src/main/java/com/carlog/app/domain/TimeText.kt",
+      "normalized_sha256": "61a0a901b430c9adeb9c40efb012ff22d368123d917489ae111824c8b12f0f9b",
+      "matches_first_zip": true
+    },
+    {
+      "path": "app/src/main/java/com/carlog/app/domain/VoiceText.kt",
+      "normalized_sha256": "94cec42521467d3414614ebafa3e5619b4f1f34c299e40f6d0aa37a1373890dd",
+      "matches_first_zip": true
+    },
+    {
+      "path": "app/src/main/java/com/carlog/app/platform/Contracts.kt",
+      "normalized_sha256": "af8284d8ef925b997342b134af8e30f2da178ed1331568626c953338c4bbd805",
+      "matches_first_zip": true
+    },
+    {
+      "path": "app/src/main/java/com/carlog/app/platform/VehicleFeeds.kt",
+      "normalized_sha256": "39195e92b4254f92df45ac00f5371feec880565cd02a0ab019caede3171cb0b1",
+      "matches_first_zip": true
+    },
+    {
+      "path": "app/src/main/java/com/carlog/app/platform/VehicleUxGate.kt",
+      "normalized_sha256": "c6efc26a463f7ced773ae41b6b55857bccbac970525eebe7f1008650cac10882",
+      "matches_first_zip": true
+    },
+    {
+      "path": "app/src/main/java/com/carlog/app/platform/voice/AndroidSpeaker.kt",
+      "normalized_sha256": "f6e39760c6330315953aca9ce1463abf07fdcf949513b9c9a5ce974b755c2a60",
+      "matches_first_zip": true
+    },
+    {
+      "path": "app/src/main/java/com/carlog/app/platform/voice/AndroidVoiceInput.kt",
+      "normalized_sha256": "2c0e9735f99871ffe689a7232b7a84f4e4b48ee167c38818784d6b304a9d6640",
+      "matches_first_zip": true
+    },
+    {
+      "path": "app/src/main/java/com/carlog/app/platform/voice/PleosSpeaker.kt",
+      "normalized_sha256": "5332cfcc116d1e6264f3a7dd489525c469fec1ab2eaed3a5283855491171215a",
+      "matches_first_zip": true
+    },
+    {
+      "path": "app/src/main/java/com/carlog/app/platform/voice/PleosVoiceInput.kt",
+      "normalized_sha256": "6e1c41f72a30ee88aa998dd18016bd9214156ac71d7619eb51bc51bf2c718837",
+      "matches_first_zip": true
+    },
+    {
+      "path": "app/src/main/java/com/carlog/app/platform/voice/VoiceErrors.kt",
+      "normalized_sha256": "8cc4746d047d9617be515f5ae2f86c3ad02293f9fd72f766b5e668aab79e0307",
+      "matches_first_zip": true
+    },
+    {
+      "path": "app/src/main/java/com/carlog/app/platform/voice/VoiceService.kt",
+      "normalized_sha256": "0acd00bf6390d44fadea88aa45e2ab0724c721a2173ae4ef79bd936e0aa7bdd2",
+      "matches_first_zip": true
+    }
+  ],
+  "repository": "halfsamoan/carlog",
+  "date": "2026-11-12",
+  "base_commit": "88a8b43",
+  "normalization": "UTF-8 text with CR characters removed"
+}

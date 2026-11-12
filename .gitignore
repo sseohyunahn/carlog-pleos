@@ -1,0 +1,20 @@
+.gradle/
+.kotlin/
+**/build/
+local.properties
+*.jks
+*.keystore
+.idea/
+captures/
+.env
+.env.*
+secrets.properties
+*.apk
+*.aab
+keystore.properties
+CarLog-release-key/
+*.pem
+design/png/
+*.iml
+# The contest submission APK lives in apk/ (apk/carlog_CarLog_release.apk) and is committed on purpose.
+!apk/*_release.apk

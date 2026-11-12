@@ -1,0 +1,17 @@
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): false
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=CarLog Release, O=CarLog, C=KR
+Signer #1 certificate SHA-256 digest: 8caa1bfed37f10d4faffbd2e3072a71300dce79d584a209ec004bc3fae038196
+Signer #1 certificate SHA-1 digest: 33e6ff1efb79615532725d92717a4814da67ce03
+Signer #1 certificate MD5 digest: 84bc43d8987e6471d3593f530e9d0b53
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 3072
+Signer #1 public key SHA-256 digest: 33adec55affa23bbbb0614e68014ec5d51eed72b769248c92e5bcfa7f0a5afe4
+Signer #1 public key SHA-1 digest: 33b82dfcb516595ec86a239170a91acc7acd9e28
+Signer #1 public key MD5 digest: a794ff6fe1da666110ff658b3d9d3c02

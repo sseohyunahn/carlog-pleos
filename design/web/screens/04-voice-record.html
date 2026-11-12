@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ko" data-theme="night" data-frame="half">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CarLog 음성 메모 녹음</title>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  /* ---- editor underneath (context only, sits behind the scrim) ---- */
+  .page-head { display: flex; flex-direction: column; gap: 8px; }
+  .page-head p { font: var(--body-m); color: var(--text-3); }
+  .panel .chips { gap: var(--target-gap); }
+  .panel .field + .field, .panel .chips + .hint { margin-top: 20px; }
+  .chip .i--s { margin-left: -4px; }
+  /* sand fill is reserved for the tag + the one primary button: selected chips use an outline + check instead */
+  .chip.is-on { background: var(--raised); color: var(--text); box-shadow: inset 0 0 0 3px var(--text); font-weight: 800; }
+
+  /* ---- record sheet ---- */
+  .sheet { display: flex; flex-direction: column; padding: 44px 48px 48px; }
+  [data-frame="full"] .sheet { left: calc(var(--gutter-full) + 320px); right: var(--gutter-full); padding: 48px 56px; }
+
+  .rs-head { display: flex; align-items: center; gap: var(--sp-m); }
+  .rs-status { display: inline-flex; align-items: center; gap: 18px; font: var(--title-m); color: var(--text); flex: 1; }
+  .rs-status .rec__dot { width: 16px; height: 16px; }
+  .rs-engine { font: var(--label-m); color: var(--text-3); text-align: right; }
+
+  .rs-body { display: flex; flex-direction: column; gap: 32px; margin-top: 28px; }
+  .rs-meter { display: flex; flex-direction: column; gap: 24px; }
+  .rs-count { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--sp-l); }
+  .secs { letter-spacing: -0.02em; line-height: 88px; }
+  .secs small { letter-spacing: 0; margin-left: 4px; }
+  .sheet p, .sheet span { word-break: keep-all; }
+  .level { height: 80px; gap: 10px; padding-bottom: 6px; }
+  .rs-text { border-top: 2px solid var(--divider); padding-top: 28px; display: flex; flex-direction: column; gap: 20px; }
+  .transcript { min-height: 88px; }
+  .rs-hint { font: var(--body-s); color: var(--text-3); }
+
+  .rs-actions { display: flex; align-items: center; gap: var(--target-gap); margin-top: 40px; }
+  .rs-actions .spacer { flex: 1; }
+  .rs-actions .btn--l:not(.btn--primary) { min-width: 0; }
+
+  /* full app area: instrument left, words right */
+  [data-frame="full"] .rs-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 36px; }
+  [data-frame="full"] .rs-meter { padding-right: 56px; justify-content: center; }
+  [data-frame="full"] .rs-text { border-top: 0; padding-top: 4px; padding-left: 56px; border-left: 2px solid var(--divider); }
+  [data-frame="full"] .rs-actions { margin-top: 48px; }
+</style>
+</head>
+<body>
+<script src="../icons.js"></script>
+<div class="frame">
+  <div class="shell">
+    <nav class="rail" aria-label="화면">
+      <div class="wordmark">CarLog</div>
+      <div class="rail__item"><svg class="i"><use href="#i-board"/></svg>인계 보드</div>
+      <div class="rail__item is-on"><svg class="i"><use href="#i-pen"/></svg>인계 남기기</div>
+      <div class="rail__item"><svg class="i"><use href="#i-clock"/></svg>지난 기록</div>
+      <div class="rail__item"><svg class="i"><use href="#i-gear"/></svg>설정</div>
+    </nav>
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <header class="appbar">
+        <span class="wordmark rail-hide">CarLog</span>
+        <span class="greet only-full">아버지, 이용을 마치셨나요?</span>
+        <span class="appbar__spacer"></span>
+        <span class="driver"><span class="avatar">아</span>아버지<svg class="i i--s"><use href="#i-chevron"/></svg></span>
+      </header>
+      <nav class="tabs" aria-label="화면">
+        <div class="tab">인계 보드</div><div class="tab is-on">인계 남기기</div><div class="tab">지난 기록</div><div class="tab">설정</div>
+      </nav>
+
+      <main class="frame__body" style="margin-top:24px" aria-hidden="true">
+        <div class="page-head rail-hide">
+          <h1 class="h-screen">이용을 마치셨나요?</h1>
+          <p>다음 운전자가 알아야 할 것만 짧게 남겨 주세요.</p>
+        </div>
+        <div class="cols">
+          <section class="col">
+            <section class="panel">
+              <div class="panel__head"><span class="t">누구에게 전달할까요?</span></div>
+              <div class="chips"><span class="chip is-on"><svg class="i i--s" aria-hidden="true"><use href="#i-check"/></svg>다음 운전자 모두</span><span class="chip">어머니</span><span class="chip">자녀</span></div>
+            </section>
+            <section class="panel">
+              <div class="panel__head"><span class="t">주차 위치</span></div>
+              <div class="field"><span class="field__label">층과 구역</span><div class="input">B3층 C17구역</div></div>
+            </section>
+          </section>
+          <section class="col">
+            <section class="panel">
+              <div class="panel__head"><span class="t">전달사항</span></div>
+              <button class="btn btn--l btn--block"><svg class="i"><use href="#i-mic"/></svg>음성으로 남기기</button>
+              <div class="field" style="margin-top:20px"><span class="field__label">전달할 내용</span><div class="input input--area"><span class="ph">예: 트렁크에 회수할 장비가 있어요.</span></div></div>
+            </section>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="scrim"></div>
+  <section class="sheet" role="dialog" aria-label="음성 메모 녹음">
+    <div class="rs-head">
+      <span class="rs-status"><span class="rec__dot"></span>듣고 있어요</span>
+      <span class="rs-engine">Pleos 음성으로 받아 적어요</span>
+    </div>
+
+    <div class="rs-body">
+      <div class="rs-meter">
+        <div class="rs-count">
+          <span class="secs">7<small>초 남음</small></span>
+          <span class="level" aria-hidden="true">
+            <i style="height:22%"></i><i style="height:40%"></i><i style="height:64%"></i><i style="height:48%"></i><i style="height:86%"></i>
+            <i style="height:100%"></i><i style="height:72%"></i><i style="height:54%"></i><i style="height:80%"></i><i style="height:60%"></i>
+            <i style="height:36%"></i><i style="height:50%"></i><i class="off" style="height:34%"></i><i class="off" style="height:26%"></i><i class="off" style="height:30%"></i>
+          </span>
+        </div>
+        <div class="timebar" role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-valuenow="7" aria-label="남은 시간"><i style="width:70%"></i></div>
+      </div>
+
+      <div class="rs-text">
+        <p class="transcript">트렁크에 우산 있어요 <span class="partial">내일</span></p>
+        <p class="rs-hint">10초 안에 말해 주세요.<br>예: “트렁크에 우산 있어요”, “내일 충전이 필요해요”</p>
+      </div>
+    </div>
+
+    <div class="rs-actions">
+      <button class="btn btn--l btn--ghost"><svg class="i"><use href="#i-keyboard"/></svg>직접 입력</button>
+      <span class="spacer"></span>
+      <button class="btn btn--l">취소</button>
+      <button class="btn btn--l btn--primary"><svg class="i"><use href="#i-stop"/></svg>말하기 끝</button>
+    </div>
+  </section>
+</div>
+<style>
+  [data-frame="half"] .only-full { display: none; }
+  [data-frame="full"] .rail-hide { display: none; }
+  .greet { font: var(--body-m); color: var(--text-3); }
+  [data-frame="full"] .appbar .greet { font: var(--title-s); color: var(--text); }
+</style>
+</body>
+</html>

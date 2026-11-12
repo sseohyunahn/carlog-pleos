@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko" data-theme="night" data-frame="half">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CarLog 인계 보드</title>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  .cta-bar { position: absolute; left: 0; right: 0; bottom: 0; padding: 24px var(--gutter-half) 32px; background: linear-gradient(to bottom, transparent, var(--bg) 28%); }
+  [data-frame="full"] .cta-bar { position: static; padding: 0; background: none; margin-top: auto; }
+  [data-frame="full"] .frame__body { padding-bottom: 40px; }
+  .vehicle { display: none; }
+  [data-frame="full"] .vehicle { display: block; }
+  .greet { font: var(--body-m); color: var(--text-3); }
+</style>
+</head>
+<body>
+<script src="../icons.js"></script>
+<div class="frame">
+  <div class="shell">
+    <nav class="rail" aria-label="화면">
+      <div class="wordmark">CarLog</div>
+      <div class="rail__item is-on"><svg class="i"><use href="#i-board"/></svg>인계 보드</div>
+      <div class="rail__item"><svg class="i"><use href="#i-pen"/></svg>인계 남기기</div>
+      <div class="rail__item"><svg class="i"><use href="#i-clock"/></svg>지난 기록</div>
+      <div class="rail__item"><svg class="i"><use href="#i-gear"/></svg>설정</div>
+    </nav>
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <header class="appbar">
+        <span class="wordmark rail-hide">CarLog</span>
+        <span class="greet only-full">어머니, 출발 전에 확인할 것들이에요</span>
+        <span class="appbar__spacer"></span>
+        <span class="link"><span class="link__dot"></span>차량 연결됨</span>
+        <span class="driver"><span class="avatar">어</span>어머니<svg class="i i--s"><use href="#i-chevron"/></svg></span>
+      </header>
+      <nav class="tabs" aria-label="화면">
+        <div class="tab is-on">인계 보드</div><div class="tab">인계 남기기</div><div class="tab">지난 기록</div><div class="tab">설정</div>
+      </nav>
+
+      <main class="frame__body" style="margin-top:24px">
+        <div class="cols">
+          <section class="col">
+            <article class="tag" aria-label="받은 인계">
+              <div class="tag__head"><span><strong>아버지</strong>가 남긴 인계</span><span>어제 19:20</span></div>
+              <div class="tag__place">B3층 C17<small>구역</small></div>
+              <div class="tag__by"><svg class="i i--s"><use href="#i-pin"/></svg>아버지가 19:18에 직접 기록한 위치</div>
+              <div class="tag__facts" style="margin-top:22px">
+                <span>배터리 78%</span><span>주행 가능 312km</span>
+                <span class="warn"><svg class="i i--s"><use href="#i-warning"/></svg>창문 1개 열림</span>
+              </div>
+              <div class="tag__perf"></div>
+              <div class="tag__foot">
+                <div class="tag__memo">확인할 메모 2건<small>충전 필요, 뒷좌석 우산</small></div>
+                <button class="btn btn--on-tag"><svg class="i"><use href="#i-play"/></svg>읽어주기</button>
+              </div>
+            </article>
+
+            <section class="panel vehicle" aria-label="현재 차량 상태">
+              <div class="panel__head"><span class="t">지금 차량 상태</span><span class="stale">10초 전 수신</span>
+                <span class="icon-btn" aria-label="다시 읽기"><svg class="i"><use href="#i-refresh"/></svg></span></div>
+              <div class="metrics">
+                <div class="metric"><span class="metric__v">78<small>%</small></span><span class="metric__l"><svg class="i i--s"><use href="#i-battery"/></svg>배터리</span>
+                  <div class="bar"><i style="width:78%"></i></div></div>
+                <div class="metric"><span class="metric__v">312<small>km</small></span><span class="metric__l"><svg class="i i--s"><use href="#i-range"/></svg>주행 가능</span></div>
+                <div class="metric metric--warn"><span class="metric__v">1<small>개</small></span><span class="metric__l"><svg class="i i--s"><use href="#i-window"/></svg>열린 창문</span></div>
+              </div>
+              <dl class="facts">
+                <dt>문</dt><dd>모두 잠김</dd>
+                <dt>누적 주행</dt><dd>24,318km</dd>
+                <dt>이번 주행</dt><dd>12.4km</dd>
+                <dt>워셔액</dt><dd>정상</dd>
+              </dl>
+            </section>
+          </section>
+
+          <section class="col">
+            <h2 class="h-section">확인할 메모 <span class="count">2</span><small>조치 완료 전까지 남아요</small></h2>
+            <article class="memo memo--important">
+              <span class="cat"><svg class="i"><use href="#i-battery"/></svg></span>
+              <div>
+                <div class="memo__meta"><span>충전·주유</span><span class="imp">중요</span><span>음성 메모</span></div>
+                <p class="memo__text">내일 아침 출발 전에 충전해 주세요. 30% 아래로 떨어져요.</p>
+              </div>
+              <div class="memo__actions">
+                <span class="memo__from">아버지가 어제 19:21에</span>
+                <button class="btn btn--s btn--ghost">확인했어요</button>
+                <button class="btn btn--s"><svg class="i i--s"><use href="#i-check"/></svg>조치 완료</button>
+              </div>
+            </article>
+            <article class="memo">
+              <span class="cat"><svg class="i"><use href="#i-bag"/></svg></span>
+              <div>
+                <div class="memo__meta"><span>물품</span><span class="read">확인함</span></div>
+                <p class="memo__text">뒷좌석에 우산 두었어요.</p>
+              </div>
+              <div class="memo__actions">
+                <span class="memo__from">아버지가 어제 19:22에</span>
+                <button class="btn btn--s"><svg class="i i--s"><use href="#i-check"/></svg>조치 완료</button>
+              </div>
+            </article>
+            <div class="cta-bar"><button class="btn btn--l btn--block btn--ghost"><svg class="i"><use href="#i-plus"/></svg>다음 운전자에게 인계 남기기</button></div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+<style>
+  [data-frame="half"] .only-full { display: none; }
+  [data-frame="full"] .rail-hide { display: none; }
+  [data-frame="full"] .appbar .greet { font: var(--title-s); color: var(--text); }
+</style>
+</body>
+</html>

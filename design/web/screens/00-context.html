@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ko" data-theme="night">
+<head>
+<meta charset="utf-8">
+<title>CarLog 차량 화면 배치</title>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  /* 2560x1440 차량 화면. 상태바·Driving View·GNB 치수는 가정값(Pleos 공식 수치 미공개). */
+  html, body { width: 2560px; height: 1440px; overflow: hidden; background: #091522; }
+  .display { position: relative; width: 2560px; height: 1440px; display: grid;
+    grid-template-columns: 440px 1060px 1060px; grid-template-rows: 64px 1256px 120px; }
+  /* system areas: same family, tabular numerals, one weight step between the key value and its context */
+  .status { grid-column: 1 / -1; display: flex; align-items: center; gap: 28px; padding: 0 40px; font: var(--label-m); letter-spacing: var(--track-label); color: #B1C2D4; }
+  .status .time { font: 700 26px/1 var(--font); color: #F1F6FC; letter-spacing: 0; }
+  .status .sp { flex: 1; }
+  .status .sys { display: inline-flex; align-items: center; gap: 10px; }
+  .status .i { width: 28px; height: 28px; }
+  .drive { grid-row: 2; background: #0E1C2C; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 12px; color: #F1F6FC; }
+  .drive .spd { font: 800 140px/1 var(--font); letter-spacing: var(--track-display); }
+  .drive .u { font: var(--label-m); letter-spacing: var(--track-label); color: #B1C2D4; }
+  .drive .gear { margin-top: 56px; display: flex; gap: 12px; font: var(--title-s); line-height: 1; color: #52677C; }
+  .drive .gear span { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; }
+  .drive .gear .on { background: #1E354C; color: #F1F6FC; }
+  .drive .state { font: var(--label-m); letter-spacing: var(--track-label); color: #B1C2D4; margin-top: 16px; }
+  .map { grid-row: 2; background: #142638; position: relative; overflow: hidden; border-left: 2px solid #091522; }
+  .map > svg { position: absolute; inset: 0; }
+  .map .next { position: absolute; left: 32px; top: 32px; right: 32px; background: #1E354C; border-radius: 28px; padding: 28px 32px; color: #F1F6FC;
+    display: flex; gap: 24px; align-items: center; font: var(--title-m); letter-spacing: var(--track-title); }
+  .map .next small { display: block; font: var(--label-m); letter-spacing: var(--track-label); color: #B1C2D4; }
+  .app { grid-row: 2; border-left: 2px solid #091522; }
+  .app iframe { width: 1060px; height: 1256px; border: 0; display: block; }
+  .gnb { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 56px; background: #091522; }
+  .gnb span { width: 76px; height: 76px; border-radius: 22px; background: #142638; display: grid; place-items: center; color: #B1C2D4; }
+  .gnb span.on { background: #8ACFFF; color: #091522; }
+  .gnb .i { width: 36px; height: 36px; }
+</style>
+</head>
+<body>
+<script src="../icons.js"></script>
+<div class="display">
+  <div class="status"><span class="time">08:12</span><span>11월 8일 일요일</span><span class="sp"></span><span>실외 9°</span><span class="sys"><svg class="i"><use href="#i-signal"/></svg>LTE</span></div>
+
+  <div class="drive" aria-label="Driving View (시스템 영역)">
+    <span class="spd">0</span><span class="u">km/h</span>
+    <div class="gear"><span class="on">P</span><span>R</span><span>N</span><span>D</span></div>
+    <div class="state">주차 중</div>
+  </div>
+
+  <div class="map" aria-label="내비게이션 (다른 앱)">
+    <svg viewBox="0 0 1060 1256" width="1060" height="1256" aria-hidden="true">
+      <g fill="none" stroke="#1E354C" stroke-width="44" stroke-linecap="round">
+        <path d="M-40 980 C 240 900, 380 760, 560 700 S 900 560, 1120 420"/>
+        <path d="M300 -40 C 340 300, 420 520, 560 700 S 640 1100, 600 1300"/>
+      </g>
+      <g fill="none" stroke="#38516A" stroke-width="18" stroke-linecap="round">
+        <path d="M-40 380 L 1100 300"/><path d="M120 1300 L 980 -40"/><path d="M-40 1180 L 1100 1120"/>
+      </g>
+      <rect x="610" y="760" width="120" height="84" rx="14" fill="#263D53"/>
+      <text x="670" y="812" text-anchor="middle" font-family="Asta Sans, sans-serif" font-size="30" font-weight="800" fill="#B1C2D4">P</text>
+      <circle cx="560" cy="700" r="26" fill="#F1F6FC"/><circle cx="560" cy="700" r="12" fill="#091522"/>
+    </svg>
+    <div class="next"><svg class="i i--l"><use href="#i-pin"/></svg><div>목적지 도착<small>지하 주차장 입구</small></div></div>
+  </div>
+
+  <div class="app"><iframe src="01-board.html?theme=night&frame=half" title="CarLog"></iframe></div>
+
+  <nav class="gnb" aria-label="GNB (시스템 영역)">
+    <span><svg class="i"><use href="#i-pin"/></svg></span>
+    <span><svg class="i"><use href="#i-speaker"/></svg></span>
+    <span class="on"><svg class="i"><use href="#i-car"/></svg></span>
+    <span><svg class="i"><use href="#i-gear"/></svg></span>
+  </nav>
+</div>
+</body>
+</html>

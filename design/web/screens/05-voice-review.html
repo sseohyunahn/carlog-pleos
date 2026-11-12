@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ko" data-theme="night" data-frame="half">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CarLog 음성 메모 확인</title>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  /* ---- editor underneath (context only, sits behind the scrim) ---- */
+  .page-head { display: flex; flex-direction: column; gap: 8px; }
+  .page-head p { font: var(--body-m); color: var(--text-3); }
+  .panel .chips { gap: var(--target-gap); }
+
+  /* ---- review sheet ---- */
+  .sheet { display: flex; flex-direction: column; padding: 44px 48px 48px; }
+  .sheet p, .sheet span, .sheet h2 { word-break: keep-all; }
+  [data-frame="full"] .sheet { left: calc(var(--gutter-full) + 320px); right: var(--gutter-full); padding: 48px 56px; }
+
+  .rv-head { display: flex; align-items: center; gap: 20px; }
+  .rv-head .ic { width: 76px; height: 76px; border-radius: 22px; background: var(--raised); color: var(--text-2); display: grid; place-items: center; flex: none; }
+  .rv-title { font: var(--headline-s); flex: 1; }
+
+  .rv-body { display: flex; flex-direction: column; margin-top: 32px; }
+  .rv-edit { display: flex; flex-direction: column; gap: 12px; }
+  .field__row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-m); }
+  .field__count { font: var(--label-m); color: var(--text-3); }
+  .rv-input { font: var(--title-m); align-items: flex-start; padding: 28px 32px; min-height: 160px; display: block; word-break: keep-all; }
+  .caret { display: inline-block; width: 4px; height: 40px; margin-left: 4px; vertical-align: -6px; border-radius: 2px; background: var(--accent-mark); }
+  .rv-note { font: var(--label-m); color: var(--text-3); display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+
+  .rv-opts { display: flex; flex-direction: column; margin-top: 36px; }
+  .rv-cat { display: flex; flex-direction: column; gap: 16px; }
+  .rv-cat .chips { gap: var(--target-gap); }
+  .rv-label { font: var(--label-m); color: var(--text-2); display: flex; gap: 16px; align-items: baseline; }
+  .rv-label small { font: var(--label-m); color: var(--text-3); }
+  .chip .i--s { margin-left: -4px; }
+  /* sand fill is reserved for the tag + the one primary button: selected chips use an outline + check instead */
+  .chip.is-on { background: var(--raised); color: var(--text); box-shadow: inset 0 0 0 3px var(--text); font-weight: 800; }
+  .rv-imp { display: flex; align-items: center; gap: var(--sp-m); margin-top: 32px; padding-top: 28px; border-top: 2px solid var(--divider); min-height: 96px; }
+  .rv-imp__main { flex: 1; min-width: 0; }
+  .rv-imp__t { font: var(--body-l); color: var(--text); }
+  .rv-imp__s { font: var(--label-m); color: var(--text-3); margin-top: 6px; }
+
+  .rv-actions { display: flex; align-items: center; gap: var(--target-gap); margin-top: 40px; }
+  .rv-actions .spacer { flex: 1; }
+  .rv-actions .btn--l:not(.btn--primary) { min-width: 0; }
+
+  /* full app area: text left, options right */
+  [data-frame="full"] .rv-body { display: grid; grid-template-columns: minmax(0, 1fr) 900px; gap: 0; margin-top: 36px; } /* options column fits all five category chips on one row */
+  [data-frame="full"] .rv-edit { padding-right: 56px; }
+  [data-frame="full"] .rv-input { min-height: 196px; }
+  [data-frame="full"] .rv-opts { margin-top: 0; padding-left: 56px; border-left: 2px solid var(--divider); }
+  [data-frame="full"] .rv-actions { margin-top: 48px; }
+</style>
+</head>
+<body>
+<script src="../icons.js"></script>
+<div class="frame">
+  <div class="shell">
+    <nav class="rail" aria-label="화면">
+      <div class="wordmark">CarLog</div>
+      <div class="rail__item"><svg class="i"><use href="#i-board"/></svg>인계 보드</div>
+      <div class="rail__item is-on"><svg class="i"><use href="#i-pen"/></svg>인계 남기기</div>
+      <div class="rail__item"><svg class="i"><use href="#i-clock"/></svg>지난 기록</div>
+      <div class="rail__item"><svg class="i"><use href="#i-gear"/></svg>설정</div>
+    </nav>
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <header class="appbar">
+        <span class="wordmark rail-hide">CarLog</span>
+        <span class="greet only-full">아버지, 이용을 마치셨나요?</span>
+        <span class="appbar__spacer"></span>
+        <span class="driver"><span class="avatar">아</span>아버지<svg class="i i--s"><use href="#i-chevron"/></svg></span>
+      </header>
+      <nav class="tabs" aria-label="화면">
+        <div class="tab">인계 보드</div><div class="tab is-on">인계 남기기</div><div class="tab">지난 기록</div><div class="tab">설정</div>
+      </nav>
+
+      <main class="frame__body" style="margin-top:24px" aria-hidden="true">
+        <div class="page-head rail-hide">
+          <h1 class="h-screen">이용을 마치셨나요?</h1>
+          <p>다음 운전자가 알아야 할 것만 짧게 남겨 주세요.</p>
+        </div>
+        <div class="cols">
+          <section class="col">
+            <section class="panel">
+              <div class="panel__head"><span class="t">누구에게 전달할까요?</span></div>
+              <div class="chips"><span class="chip is-on"><svg class="i i--s" aria-hidden="true"><use href="#i-check"/></svg>다음 운전자 모두</span><span class="chip">어머니</span><span class="chip">자녀</span></div>
+            </section>
+            <section class="panel">
+              <div class="panel__head"><span class="t">주차 위치</span></div>
+              <div class="field"><span class="field__label">층과 구역</span><div class="input">B3층 C17구역</div></div>
+            </section>
+          </section>
+          <section class="col">
+            <section class="panel">
+              <div class="panel__head"><span class="t">전달사항</span></div>
+              <button class="btn btn--l btn--block"><svg class="i"><use href="#i-mic"/></svg>음성으로 남기기</button>
+              <div class="field" style="margin-top:20px"><span class="field__label">전달할 내용</span><div class="input input--area"><span class="ph">예: 트렁크에 회수할 장비가 있어요.</span></div></div>
+            </section>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="scrim"></div>
+  <section class="sheet" role="dialog" aria-labelledby="rv-title">
+    <div class="rv-head">
+      <span class="ic"><svg class="i"><use href="#i-mic"/></svg></span>
+      <h2 class="rv-title" id="rv-title">음성으로 받아 적었어요</h2>
+    </div>
+
+    <div class="rv-body">
+      <div class="rv-edit">
+        <div class="field__row"><span class="field__label">전달할 내용</span><span class="field__count">29/300</span></div>
+        <div class="input is-focus rv-input">트렁크에 우산 있어요. 내일 아침에 충전이 <span style="white-space:nowrap">필요해요.<span class="caret" aria-hidden="true"></span></span></div>
+        <p class="rv-note"><svg class="i i--s"><use href="#i-pen"/></svg>인식이 정확하지 않으면 고쳐서 저장해 주세요.</p>
+      </div>
+
+      <div class="rv-opts">
+        <div class="rv-cat">
+          <span class="rv-label">분류<small>내용을 보고 골랐어요</small></span>
+          <div class="chips" role="radiogroup" aria-label="분류">
+            <span class="chip is-on" role="radio" aria-checked="true"><svg class="i i--s" aria-hidden="true"><use href="#i-check"/></svg>물품</span>
+            <span class="chip" role="radio" aria-checked="false">충전·주유</span>
+            <span class="chip" role="radio" aria-checked="false">차량 관리</span>
+            <span class="chip" role="radio" aria-checked="false">위치</span>
+            <span class="chip" role="radio" aria-checked="false">기타</span>
+          </div>
+        </div>
+        <div class="rv-imp" role="switch" aria-checked="false" aria-label="중요">
+          <div class="rv-imp__main">
+            <div class="rv-imp__t">중요</div>
+            <div class="rv-imp__s">다음 운전자의 보드 맨 위에 보여요</div>
+          </div>
+          <span class="switch" aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="rv-actions">
+      <button class="btn btn--l btn--ghost"><svg class="i"><use href="#i-mic"/></svg>다시 말하기</button>
+      <span class="spacer"></span>
+      <button class="btn btn--l">취소</button>
+      <button class="btn btn--l btn--primary"><svg class="i"><use href="#i-plus"/></svg>목록에 추가</button>
+    </div>
+  </section>
+</div>
+<style>
+  [data-frame="half"] .only-full { display: none; }
+  [data-frame="full"] .rail-hide { display: none; }
+  .greet { font: var(--body-m); color: var(--text-3); }
+  [data-frame="full"] .appbar .greet { font: var(--title-s); color: var(--text); }
+</style>
+</body>
+</html>

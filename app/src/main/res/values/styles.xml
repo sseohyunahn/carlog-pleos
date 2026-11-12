@@ -1,0 +1,11 @@
+<resources>
+    <style name="Theme.CarLog" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">#091522</item>
+        <item name="android:navigationBarColor">#091522</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:colorAccent">#8ACFFF</item>
+        <item name="android:windowBackground">#091522</item>
+    </style>
+</resources>
