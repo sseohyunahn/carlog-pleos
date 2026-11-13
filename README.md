@@ -33,7 +33,14 @@ release는 `keystore.properties.example`을 `keystore.properties`로 복사해 �
 
 출력은 `app/build/outputs/apk/release/carlog_CarLog_release.apk`이며 검증한 배포본은 `apk/carlog_CarLog_release.apk`에도 있습니다. 서명키와 비밀번호는 저장소에 포함하지 않습니다. 기존 APK와 키가 다르면 같은 패키지 위에 업데이트 설치할 수 없습니다.
 
-Windows 한글 경로에서 Java 테스트 실행기 문제가 생기면 프로젝트·Gradle 캐시·서명키를 영문 경로로 연결해 빌드하세요. 현재 PC의 재빌드 스크립트는 작업 폴더 루트의 `Build-CarLog-Release.cmd`입니다.
+Windows 한글 경로에서 Java 테스트 실행기 문제가 생기면 프로젝트·Gradle 캐시·서명키를 영문 경로로 연결해 빌드하세요. 
+
+### 검증 환경
+
+- 에뮬레이터: Pleos Connect용 Android 14(API 34), x86_64
+- 화면 규격: 2560 × 1440px, 화면 밀도 160dpi
+- 화면 구성: 반 창과 전체 창에서 주간·야간 테마 확인
+- 
 
 ## 소스와 화면
 
